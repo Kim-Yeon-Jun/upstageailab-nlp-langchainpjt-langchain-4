@@ -337,3 +337,6 @@ wandb/
 
 # augmentation 관련 캐시 디렉토리 제외
 augraphy_cache/
+
+.conda/
+__pycache__/
