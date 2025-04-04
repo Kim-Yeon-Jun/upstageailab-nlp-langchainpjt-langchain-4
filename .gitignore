@@ -327,6 +327,7 @@ $RECYCLE.BIN/
 *.npz
 *.joblib
 *.pt
+*.pdf
 
 # mlflow 관련 아티팩트 디렉토리도 제외
 mlartifacts/
