@@ -1,11 +1,11 @@
 import streamlit as st
 from streamlit_chat import message
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage
 from langserve import RemoteRunnable
 import pandas as pd
 import requests
 import json
-import uuid
+
 
 
 class rag_web():
@@ -14,14 +14,6 @@ class rag_web():
         self.URL_DICT = {
             "LangChain": f"{self.BASE_URL}/upstage_chain/"
         }
-        # 세션 ID 초기화
-        if "session_id" not in st.session_state:
-            st.session_state.session_id = f"user-session-{uuid.uuid4()}"
-        
-        # 채팅 기록 초기화
-        if "chat_history" not in st.session_state:
-            st.session_state.chat_history = []
-            
         self.gen_sidebar()
 
     def gen_sidebar(self):
@@ -32,56 +24,29 @@ class rag_web():
                 key='model',
                 on_change=self.rest_log
             )
-            # 세션 ID 표시 (디버깅용, 필요없으면 제거)
-            st.text(f"Session ID: {st.session_state.session_id}")
-            if st.button("New Session"):
-                st.session_state.session_id = f"user-session-{uuid.uuid4()}"
-                self.rest_log()
-                st.experimental_rerun()
 
     def get_answer_langserve(self, message):
         url = self.URL_DICT[st.session_state['model']]
+        # RemoteRunnable 모듈을 사용하면 url만 있으면 결과를 받아올 수 있음
         lang = RemoteRunnable(url)
-        
-        # RunnableWithMessageHistory에 맞는 입력 형식 구성
-        input_data = {
-            "input": message,  # 단일 input 문자열
-            "config": {
-                "configurable": {
-                    "session_id": st.session_state.session_id
-                }
-            }
-        }
-        print(f"Input data: {input_data}")  # 디버깅용
-        print(f"session_id: {st.session_state.session_id}")  # 디버깅용
+        result = lang.invoke(message)
 
-        try:
-            result = lang.invoke(input_data)
-            
-            # 응답 결과 처리
-            if isinstance(result, dict) and "output" in result:
-                response = result["output"]
-            else:
-                response = str(result)
-                
-            return_image = False
-            source_nodes = []
+        return_image=False
+        source_nodes = []
+        if isinstance(result, str):
+            return result, source_nodes, return_image
         
-            
-            # 대화 기록 업데이트 (메시지 객체는 서버에서 관리)
-            return response, source_nodes, return_image
-            
-        except Exception as e:
-            st.error(f"Error: {str(e)}")
-            return f"Error: {str(e)}", [], False
+        return result
     
     def get_answer(self, message):
+        # if st.session_state['model'].fing("Lang") > -1:
         return self.get_answer_langserve(message)
 
     def window(self):
         st.title("My RAG Model")
         st.subheader("langchain API")
         st.caption("created by team4")
+
 
         st.text_input("type a message..", key="user_message")
         if user_message := st.session_state.user_message:
@@ -102,9 +67,6 @@ class rag_web():
         st.session_state.chat_log["bot_message"].append(bot_message)
 
     def display_chat_log(self):
-        if "chat_log" not in st.session_state:
-            return
-            
         bot_messages = st.session_state.chat_log["bot_message"][::-1]
         user_messages = st.session_state.chat_log["user_message"][::-1]
 
@@ -137,7 +99,6 @@ class rag_web():
             response, source_nodes, return_image = st.session_state['bot_output']
             self.display_chat_log()
 
-            # 소스 노드 표시 (필요한 경우 주석 해제)
             # source_nodes = pd.DataFrame(source_nodes)
             # if "node" in source_nodes.columns:
             #     source_nodes[['text', 'metadata']] = source_nodes['node'].apply(lambda x: pd.Series((x['text'], x['metadata']['file_name'])))

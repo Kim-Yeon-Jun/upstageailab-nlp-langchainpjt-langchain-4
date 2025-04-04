@@ -54,7 +54,7 @@ class rag_web():
         }
         print(f"Input data: {input_data}")  # 디버깅용
         print(f"session_id: {st.session_state.session_id}")  # 디버깅용
-
+        
         try:
             result = lang.invoke(input_data)
             
@@ -66,7 +66,10 @@ class rag_web():
                 
             return_image = False
             source_nodes = []
-        
+            
+            # 소스 노드 추출 (결과에 source_documents가 있는 경우)
+            if isinstance(result, dict) and "source_documents" in result:
+                source_nodes = result["source_documents"]
             
             # 대화 기록 업데이트 (메시지 객체는 서버에서 관리)
             return response, source_nodes, return_image
