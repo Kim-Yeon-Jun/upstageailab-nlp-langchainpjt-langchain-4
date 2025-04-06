@@ -28,8 +28,6 @@ load_dotenv()
 
 search = DuckDuckGoSearchRun()
 
-search.invoke("Obama's first name?")
-
 bs4.SoupStrainer(
     "div",
     attrs={"class": ["newsct_article _article_body", "media_end_head_title"]},
