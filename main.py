@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from langserve import add_routes
 
 from langchain_api_web import chain
-from rag_tool import agent_with_chat_history
+from agent import agent_with_chat_history
 
 app = FastAPI()
 
