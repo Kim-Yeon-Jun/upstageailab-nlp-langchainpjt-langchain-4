@@ -1,12 +1,10 @@
 import os
 import pickle
-import bs4
-from langchain.document_loaders import WebBaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter, MarkdownTextSplitter, Language
 
 
 # 카테고리별 분할기 설정
-def get_splitter_for_category(category):
+def get_splitter_for_category(category: str):
     """카테고리에 따라 적절한 텍스트 분할기를 반환합니다."""
     # 카테고리명에 기반한 분할기 선택
     if category in ['markdown', '마크다운', 'docs', 'documentation']:
@@ -18,7 +16,7 @@ def get_splitter_for_category(category):
         return RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     
 # 여러 출처의 데이터를 불러와 처리하는 함수
-def load_all_data(data_dir="data"):
+def load_all_data(data_dir: str ="data"):
     """
     모든 카테고리의 데이터를 불러와 처리합니다.
     

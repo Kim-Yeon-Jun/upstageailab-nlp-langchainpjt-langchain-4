@@ -1,16 +1,13 @@
 from fastapi import FastAPI
 from langserve import add_routes
-
-from langchain_api_web import chain
-from agent import agent_with_chat_history
+from agent import AgentManager
 
 app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message":"Hello world"}
+    return {"message": "Hello world"}
 
-# add_routes(app, chain, path="/upstage_chain")
-add_routes(app, agent_with_chat_history, path="/upstage_chain")
-
-
+# 에이전트 라우팅 연결
+agent = AgentManager().get_agent()
+add_routes(app, agent, path="/upstage_chain")
