@@ -1,10 +1,10 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/5BS4k7bR)
 # **LangChain 프로젝트** *(예시)*
 
-LangChain과 MLOps 기술을 활용하여, 사내 문서 기반 Q&A 시스템을 구축하는 프로젝트입니다.  
-RAG(Retrieval-Augmented Generation) 구조를 바탕으로 문서 검색 및 응답 시스템을 구현하고, 전체 모델 생애주기를 관리 가능한 파이프라인으로 구성했습니다.
+LangChain과 Upstage Embedding을 활용하여, 여러 문서(PDF, 크롤링, Python 코드)를 기반으로 대화형 질의응답 시스템을 구축한 프로젝트입니다.
+RAG(Retrieval-Augmented Generation) 구조와 LangServe API 구조를 활용해 실시간 질의응답 서비스 형태로 통합했습니다.
 
-- **프로젝트 기간:** 2025.03.01 ~ 2025.04.15  
+- **프로젝트 기간:** 2025.04.02 ~ 2025.04.08  
 - **주제:** LangChain 기반 문서 검색 + Q&A 자동화 시스템  
 
 ---
@@ -25,37 +25,29 @@ RAG(Retrieval-Augmented Generation) 구조를 바탕으로 문서 검색 및 응
 LangChain 기반 문서 QA 시스템의 구축 및 운영을 위한 파이프라인입니다.
 
 ## **1. 비즈니스 문제 정의**
-- 내부 문서에 대한 빠르고 정확한 자동 응답 시스템 구축
-- 고객지원 및 사내 지식관리의 효율성 증대
-- KPI: 응답 정확도, 평균 응답 시간, 사용자 만족도
+- 복잡한 문서에서 원하는 정보를 쉽게 찾으 수 있는 자동 질의응답 시스템 필요
+- 내부 지식베이스 활용 극대화
+- 목표 KPI: 응답 정확도 향상, 사용자 피드백 만족도 확보
 
 ## **2. 데이터 수집 및 전처리**
-1. **데이터 수집**
-   - Notion, PDF, 사내 위키 등에서 문서 수집 후 S3 저장
-2. **문서 파싱 및 전처리**
-   - LangChain의 DocumentLoader 사용
-   - Chunking, Text Cleaning
-3. **임베딩 및 벡터화**
-   - OpenAI / HuggingFace Embedding 모델 사용
-   - FAISS / Weaviate / Qdrant 등을 활용한 벡터 DB 구축
-4. **데이터 버전 관리**
-   - DVC 및 S3로 문서 버전 관리
+- .pkl 형태로 정제된 문서 데이터 사용
+- 카테고리별로 문서를 불러와 Markdown 또는 Python 코드 등 형식에 맞게 청크 분할
+- LangChain의 TextSplitter 활용
 
-## **3. LLM 및 RAG 파이프라인 구성**
-- LangChain의 RetrievalQA 모듈 활용
-- Chain 구성: Embedding → Retriever → LLM(응답)
-- LLM: OpenAI GPT-4 / Mistral / Claude 등 선택 가능
+## **3. 벡터화 및 툴 생성**
+- Upstage Embedding 기반으로 FAISS 벡터스토어 생성
+- 카테고리별 벡터스토어를 기반으로 LangChain Tool 자동 생성
+- DuckDuckGo Tool과 통합하여 최신 정보 검색도 가능
 
-## **4. 모델 학습 및 실험 추적**
-- 필요 시, 사내 문서로 파인튜닝된 LLM 학습
-- MLflow를 통해 실험, 하이퍼파라미터, 모델 버전 관리
-- Optuna / Weights & Biases 연동 가능
+## **4. LLM 및 RAG 파이프라인 구성**
+- ChatUpstage 모델 기반 LLM 응답 처리
+- LangChain의 Tool Calling Agent 사용
+- 사용자 입력과 대화 히스토리를 기반으로 실행기 구성성
 
-## **5. 실행 환경 구성**
-1. **FastAPI 기반 API 서버 구성 (옵션)**
-2. **Docker로 로컬 환경에서 통합 실행 가능**
-3. **터미널 기반 CLI로 즉시 테스트 가능**
-4. **로컬 또는 클라우드 환경(AWS EC2 등) 모두 지원**
+## **5. API 제공 및 실행 환경**
+- FastAPI + LangServe 조합으로 RAG 응답 API 제공
+- /upstage_chain 엔드포인트로 agent 노출
+- 로컬 환경 또는 EC2 등 서버에서도 동일하게 구동 가능
 
 ## **6. 모니터링 및 재학습 루프**
 1. **모델 성능 모니터링**
@@ -75,19 +67,20 @@ LangChain 기반 문서 QA 시스템의 구축 및 운영을 위한 파이프라
 
 ```bash
 # 1. 프로젝트 클론
-git clone https://github.com/your-org/langchain-qa-project.git
-cd langchain-qa-project
+git clone https://github.com/your-org/langchain-rag-agent.git
+cd langchain-rag-agent
 
 # 2. 가상환경 설정 및 패키지 설치
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
-# 3. 환경 변수 설정
-export OPENAI_API_KEY=your-api-key
+# 3. .env 환경 변수 설정
+OPENAI_API_KEY=your-api-key
+UPSTAGE_API_KEY=your-upstage-key
 
-# 4. 실행
-python main.py
+# 4. FastAPI 서버 실행
+uvicorn main:app --reload --port 30032
 ```
 
 ---
@@ -101,7 +94,7 @@ python main.py
 
 ### **협업 툴**
 - **소스 관리:** GitHub
-- **프로젝트 관리:** Jira, Confluence
+- **프로젝트 관리:** GitHub
 - **커뮤니케이션:** Slack
 - **버전 관리:** Git
 
@@ -125,20 +118,26 @@ python main.py
 
 프로젝트 진행 중 담당 강사님과의 피드백 세션을 통해 얻은 주요 인사이트는 다음과 같습니다.
 
-### 📌 **1차 피드백 (YYYY.MM.DD)**
-- **LangChain Retriever 선택 기준 설명이 부족**  
-  → 다양한 Retriever 종류에 대해 비교 분석하고, 왜 특정 벡터 DB(RAG with FAISS 등)를 선택했는지 근거 추가.
-- **실제 유저 시나리오 고려 부족**  
-  → 단순 기술 데모를 넘어서, 사용자의 입력 방식, 오답 처리 UX 흐름까지 고려한 API 설계 제안.
+### 📌 **1차 피드백 (2025.04.02)**
+- **LangChain, RAG 학습 부족**  
+  → 전체적으로 LangChain과 RAG 선행이 되어있지 않아서 일단 강의를 보고 개념을 이해하는 시간을 가지기.
 
-### 📌 **2차 피드백 (YYYY.MM.DD)**
-- **MLOps 구성요소 간 연결 시각화 부족**  
-  → MLflow, DVC, CI/CD, 모니터링 툴들이 어떻게 유기적으로 연결되는지 다이어그램 추가.
-- **재학습(Loop) 조건 불명확**  
-  → 어떤 기준으로 재학습이 트리거되는지 수치 기반 조건 정리 필요 (예: 정확도 70% 미만 시 재학습 등).
+### 📌 **2차 피드백 (2025.04.03)**
+- **주제 빨리 정하기**  
+- **Native RAG 코드에서 프로젝트 데이터로 바꿔서 결과보기**  
+- **금요일(내일)에는 코드 보면서 멘토링 진행 예정**
 
-### 📌 **3차 피드백 (YYYY.MM.DD)**
-- **API 보안 및 접근 제어 미흡**  
-  → 인증 토큰 기반 접근 제어 및 요청 제한 정책 도입 제안.
-- **프롬프트 설계 최적화 피드백**  
-  → 단순 질문-응답 프롬프트가 아닌, 문맥 유지형 시스템 메시지 설계 제안.
+### 📌 **3차 피드백 (2025.04.04)**
+- **기존 NativeRAG에서 발전 가능성 찾아보기**  
+  → Advanced RAG 기법 알아보기.
+- **GitHub repository 모든 팀원이 Contributor가 되기**  
+- **마지막 발표 출력형태는 streamlit 데모 형태**
+
+### 📌 **4차 피드백 (2025.04.07)**
+- **코드 Class로 구현하기**  
+- **LLM을 통한 프롬프팅으로 의도 분석하는 프로세스 구현하기**  
+- **Embedding, retriever 방식 수정해보기**
+- **코드 return 형식도 볼 수 있게 코드 깔끔하게 정리하기**
+- **GitHub test 코드들은 폴더에 넣어서 정리하기**
+- **프롬프트를 풍부하게 작성(순서대로 답변해줘 등)**
+- **ReAct 프롬프트 구현(agent 만들 때 사용)**
