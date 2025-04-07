@@ -2,6 +2,7 @@
 # **LangChain 프로젝트** *(예시)*
 
 LangChain과 Upstage Embedding을 활용하여, 여러 문서(PDF, 크롤링, Python 코드)를 기반으로 대화형 질의응답 시스템을 구축한 프로젝트입니다.
+
 RAG(Retrieval-Augmented Generation) 구조와 LangServe API 구조를 활용해 실시간 질의응답 서비스 형태로 통합했습니다.
 
 - **프로젝트 기간:** 2025.04.02 ~ 2025.04.08  
@@ -136,7 +137,7 @@ uvicorn main:app --reload --port 30032
 ### 📌 **4차 피드백 (2025.04.07)**
 - **코드 Class로 구현하기**  
 - **LLM을 통한 프롬프팅으로 의도 분석하는 프로세스 구현하기**  
-- **Embedding, retriever 방식 수정해보기**
+- **Embedding, Retriever 방식 수정해보기**
 - **코드 return 형식도 볼 수 있게 코드 깔끔하게 정리하기**
 - **GitHub test 코드들은 폴더에 넣어서 정리하기**
 - **프롬프트를 풍부하게 작성(순서대로 답변해줘 등)**
