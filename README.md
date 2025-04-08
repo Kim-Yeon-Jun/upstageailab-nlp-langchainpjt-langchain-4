@@ -50,15 +50,6 @@ LangChain 기반 문서 QA 시스템의 구축 및 운영을 위한 파이프라
 - /upstage_chain 엔드포인트로 agent 노출
 - 로컬 환경 또는 EC2 등 서버에서도 동일하게 구동 가능
 
-## **6. 모니터링 및 재학습 루프**
-1. **모델 성능 모니터링**
-   - Prometheus, Grafana를 통한 응답 시간 및 정확도 트래킹
-2. **데이터 Drift 탐지**
-   - Evidently AI 활용
-3. **사용자 피드백 루프**
-   - 사용자의 thumbs-up/down 기록을 통해 성능 개선
-   - 재학습 조건 충족 시 자동 트리거되는 학습 파이프라인 구성
-
 ---
 
 ## **프로젝트 실행 방법**
@@ -68,8 +59,8 @@ LangChain 기반 문서 QA 시스템의 구축 및 운영을 위한 파이프라
 
 ```bash
 # 1. 프로젝트 클론
-git clone https://github.com/your-org/langchain-rag-agent.git
-cd langchain-rag-agent
+git clone https://github.com/UpstageAILab6/upstageailab-nlp-langchainpjt-langchain-4.git
+cd upstageailab-nlp-langchainpjt-langchain-4
 
 # 2. 가상환경 설정 및 패키지 설치
 python -m venv venv
@@ -77,21 +68,21 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # 3. .env 환경 변수 설정
-OPENAI_API_KEY=your-api-key
 UPSTAGE_API_KEY=your-upstage-key
-
+LANGSMITH_TRACING=true
+LANGSMITH_ENDPOINT="https://api.smith.langchain.com"
+LANGSMITH_API_KEY=your-langsmith-key
+LANGSMITH_PROJECT="rag-project"
 # 4. FastAPI 서버 실행
 uvicorn main:app --reload --port 30032
+
+# 5. Streamlit ui 실행
+streamlit run rag_st.py
 ```
 
 ---
 
 ## **활용 장비 및 사용 툴**
-
-### **활용 장비**
-- **서버:** AWS EC2 (m5.large), S3, ECR
-- **개발 환경:** Ubuntu 22.04, Python 3.10+
-- **테스트 환경:** NVIDIA V100 GPU 서버 (Lambda Labs 등)
 
 ### **협업 툴**
 - **소스 관리:** GitHub
@@ -100,19 +91,8 @@ uvicorn main:app --reload --port 30032
 - **버전 관리:** Git
 
 ### **사용 도구**
-- **CI/CD:** GitHub Actions, Jenkins
-- **LLM 통합:** LangChain, OpenAI API, HuggingFace
-- **실험 관리:** MLflow, Optuna
-- **데이터 관리:** DVC, AWS S3
-- **모니터링:** Prometheus, Grafana, ELK Stack
-- **배포 및 운영:** Docker, Kubernetes, Helm
-
----
-
-## **기대 효과 및 향후 계획**
-- 문서 기반 질문 응답 자동화로 고객 응대 시간 절감
-- 사내 문서 검색 정확도 및 사용성 향상
-- 향후 다양한 도메인 문서(QA, 정책, 교육자료 등)에 확장 적용 예정
+- **LLM 통합:** LangChain, Upstage API
+- **실험 관리:** Langsmith
 
 ---
 ## **강사님 피드백 및 프로젝트 회고**
