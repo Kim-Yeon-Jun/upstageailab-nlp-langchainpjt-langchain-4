@@ -10,7 +10,7 @@ import uuid
 
 class rag_web():
     def __init__(self):
-        self.BASE_URL = "http://localhost:30018"
+        self.BASE_URL = "http://localhost:30032"
         self.URL_DICT = {
             "LangChain": f"{self.BASE_URL}/upstage_chain/"
         }
